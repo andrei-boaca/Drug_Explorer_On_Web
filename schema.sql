@@ -15,12 +15,8 @@ DROP TABLE IF EXISTS `prevalenta_timp_prima_injectare`, `prevalenta_varsta`, `pr
                      `lege_condamnari`, `confiscari`, `tipuri_droguri`, `condamnari`, `substante`, 
                      `proiecte`, `boli`, `legi`, `categorii_droguri`;
 
--- Reactivăm verificarea cheilor străine
 SET FOREIGN_KEY_CHECKS = 1;
 
--- ===================================================================
--- 1. NOMENCLATOARE (Tabele de bază ce nu depind de alte tabele)
--- ===================================================================
 
 CREATE TABLE `categorii_droguri` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -56,9 +52,6 @@ CREATE TABLE `condamnari` (
   `an` int
 ) ENGINE=InnoDB;
 
--- ===================================================================
--- 2. TABELE CU DEPENDENȚE (Conțin Foreign Keys către Nomenclatoare)
--- ===================================================================
 
 CREATE TABLE `tipuri_droguri` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -103,9 +96,6 @@ CREATE TABLE `actiuni` (
   FOREIGN KEY (`id_proiect`) REFERENCES `proiecte`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ===================================================================
--- 3. DATE PACIENȚI & TRATAMENT (Grupate pe Categorii de Droguri)
--- ===================================================================
 
 CREATE TABLE `regim_tratament` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -170,9 +160,6 @@ CREATE TABLE `ocupatie_pacienti` (
   FOREIGN KEY (`id_categorie`) REFERENCES `categorii_droguri`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ===================================================================
--- 4. URGENȚE MEDICALE (Grupate pe Categorii de Droguri)
--- ===================================================================
 
 CREATE TABLE `sex_urgente` (
   `id` int PRIMARY KEY AUTO_INCREMENT,
@@ -210,9 +197,6 @@ CREATE TABLE `diagnostic_urgenta` (
   FOREIGN KEY (`id_categorie`) REFERENCES `categorii_droguri`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
--- ===================================================================
--- 5. BOLI INFECȚIOASE (Grupate pe Tip de Boală)
--- ===================================================================
 
 CREATE TABLE `prevalenta_sex` (
   `id` int PRIMARY KEY AUTO_INCREMENT,

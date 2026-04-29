@@ -1,7 +1,3 @@
--- ===================================================================
--- POPULARE TABEL: categorii_droguri
--- Date extrase si curatate din raportul TDI (Tratament) 2022
--- ===================================================================
 
 USE `statistici_droguri`;
 
@@ -15,10 +11,6 @@ INSERT INTO `categorii_droguri` (`nume`) VALUES
 ('Canabis'),
 ('Alte Substanțe');
 
--- ===================================================================
--- POPULARE TABEL: tipuri_droguri (cu mapare pe categorii)
--- Corelare între Capturi și Categoriile standard TDI/ANA
--- ===================================================================
 
 INSERT INTO `tipuri_droguri` (`nume`, `id_categorie`) VALUES
 -- Categoria 1: Opioide

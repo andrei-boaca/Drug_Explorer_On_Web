@@ -72,7 +72,7 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ── Populare dropdown-uri ─────────────────────────────────────────
-fetch('api/filters.php')
+fetch('api/router.php?section=filters')
   .then(r => r.json())
   .then(data => {
     document.querySelectorAll('select[name="drog_id"]').forEach(sel => {
@@ -124,17 +124,17 @@ document.querySelectorAll('.ajax-form').forEach(form => {
   form.addEventListener('submit', async e => {
     e.preventDefault();
 
-    const endpoint = form.dataset.endpoint;
-    const section  = endpoint.replace('api/', '').replace('.php', '');
+    const section  = form.dataset.section;
     const resultEl = document.getElementById('result-' + section);
     const params   = getFormParams(form);
+    params.set('section', section);
     const btn      = form.querySelector('button[type="submit"]');
 
     resultEl.innerHTML = '<p class="loading">Se încarcă<span class="dots">...</span></p>';
     btn.disabled = true;
 
     try {
-      const res  = await fetch(endpoint + '?' + params.toString());
+      const res  = await fetch('api/router.php?' + params.toString());
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const json = await res.json();
 
@@ -162,6 +162,6 @@ document.querySelectorAll('.btn-export').forEach(btn => {
     const params  = getFormParams(form);
     params.set('section', section);
     params.set('format', format);
-    window.location.href = 'api/export.php?' + params.toString();
+    window.location.href = 'api/router.php?' + params.toString();
   });
 });

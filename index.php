@@ -37,7 +37,7 @@
     <h1 class="section-title">Confiscări de droguri</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/confiscari.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="confiscari">
           <div class="field">
             <label for="conf-drog">Tip drog</label>
             <select id="conf-drog" name="drog_id">
@@ -64,7 +64,7 @@
     <h1 class="section-title">Condamnări · profil demografic</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/condamnari.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="condamnari">
           <div class="field">
             <label for="cond-an">An</label>
             <input id="cond-an" name="an" type="number" min="2000" max="2030" placeholder="ex. 2022" />
@@ -93,7 +93,7 @@
     <h1 class="section-title">Urgențe medicale · detalii pe sex</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/urgente.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="urgente">
           <div class="field">
             <label for="urg-cat">Categorie drog</label>
             <select id="urg-cat" name="categorie_id">
@@ -120,7 +120,7 @@
     <h1 class="section-title">Regim de tratament</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/tratament.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="tratament">
           <div class="field">
             <label for="trat-cat">Categorie drog</label>
             <select id="trat-cat" name="categorie_id">
@@ -147,7 +147,7 @@
     <h1 class="section-title">Proiecte de prevenire</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/actiuni.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="actiuni">
           <div class="field">
             <label for="act-an">An</label>
             <input id="act-an" name="an" type="number" min="2000" max="2030" placeholder="ex. 2022" />
@@ -168,7 +168,7 @@
     <h1 class="section-title">Prevalența bolilor infecțioase · pe sex</h1>
     <div class="card">
       <div class="card-body">
-        <form class="ajax-form" data-endpoint="api/boli.php">
+        <form class="ajax-form" data-endpoint="api/router.php" data-section="boli">
           <div class="field">
             <label for="boala-sel">Boală</label>
             <select id="boala-sel" name="boala_id">

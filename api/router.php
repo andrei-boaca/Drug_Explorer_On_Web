@@ -76,6 +76,17 @@ switch ($section) {
         ))->handle();
         break;
 
+    case 'drug-detail':
+        require_once __DIR__ . '/../src/Repository/DrugDetailRepository.php';
+        require_once __DIR__ . '/../src/Service/DrugDetailService.php';
+        require_once __DIR__ . '/../src/Controller/DrugDetailController.php';
+        (new DrugDetailController(
+            new DrugDetailService(
+                new DrugDetailRepository(getConnection())
+            )
+        ))->handle();
+        break;
+
     default:
         respondError('Secțiune invalidă.');
 }

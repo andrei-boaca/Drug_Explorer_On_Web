@@ -4,6 +4,13 @@ require_once __DIR__ . '/../config.php';
 header('Content-Type: application/json; charset=utf-8');
 header('X-Content-Type-Options: nosniff');
 
+set_exception_handler(function (Throwable $e): void {
+    error_log('Unhandled exception: ' . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['error' => 'Eroare server.'], JSON_UNESCAPED_UNICODE);
+    exit;
+});
+
 function respond(array $data): void {
     echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
     exit;
@@ -12,17 +19,6 @@ function respond(array $data): void {
 function respondError(string $msg, int $code = 400): void {
     http_response_code($code);
     respond(['error' => $msg]);
-}
-
-function q(string $sql, array $params = []): array {
-    try {
-        $stmt = getConnection()->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll();
-    } catch (PDOException $e) {
-        error_log('DB: ' . $e->getMessage());
-        respondError('Eroare bază de date.', 500);
-    }
 }
 
 function intParam(string $key): ?int {

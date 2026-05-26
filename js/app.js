@@ -299,120 +299,308 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrugModal(); });
 });
 
-// ── Chart config builder ──────────────────────────────────────────
-function buildChartConfig(section, rows, chartType) {
-  const cfg = CHART_MAP[section]?.[chartType];
-  if (!cfg || !rows.length) return null;
+// ── Native Canvas Charts (replaces Chart.js) ────────────────────
+const FONT_C  = "11px 'Inter', system-ui, sans-serif";
+const GRID_C  = '#E2E8F0';
+const TICK_C  = '#64748B';
 
-  const fontDef = { family: 'Inter, system-ui, sans-serif', size: 11 };
-  const gridColor = '#E2E8F0';
+function niceMax(max) {
+  if (max <= 0) return 10;
+  const exp  = Math.pow(10, Math.floor(Math.log10(max)));
+  const frac = max / exp;
+  const nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
+  return nice * exp;
+}
 
-  /* ── Multi-dataset bar (boli: testati vs pozitivi) ── */
-  if (cfg.multi && chartType === 'bar') {
-    const labels = [...new Set(rows.map(r => String(r[cfg.labelKey] ?? '')))];
-    const datasets = cfg.datasets.map(ds => {
-      const data = labels.map(lbl => {
-        return rows.filter(r => String(r[cfg.labelKey]) === lbl)
-                   .reduce((s, r) => s + (parseFloat(r[ds.key]) || 0), 0);
+function fitText(ctx, text, maxW) {
+  if (ctx.measureText(text).width <= maxW) return text;
+  let t = text;
+  while (t.length > 1 && ctx.measureText(t + '\u2026').width > maxW) t = t.slice(0, -1);
+  return t + '\u2026';
+}
+
+function hexAlpha(hex, a) {
+  const n = parseInt(hex.slice(1, 7), 16);
+  return `rgba(${(n >> 16) & 255},${(n >> 8) & 255},${n & 255},${a})`;
+}
+
+function setupCanvas(canvas) {
+  const dpr  = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  canvas.width  = Math.round(rect.width  * dpr);
+  canvas.height = Math.round(rect.height * dpr);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  return { ctx, w: rect.width, h: rect.height };
+}
+
+// ── Vertical bar (single or multi-dataset) ────────────────────────
+function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) {
+  let hovered = -1;
+  let hitAreas = [];
+  const isMulti = datasets.length > 1;
+
+  function draw() {
+    const { ctx, w, h } = setupCanvas(canvas);
+    const PAD = { t: 20, r: 20, b: isMulti ? 70 : 55, l: 60 };
+    const cw  = w - PAD.l - PAD.r;
+    const ch  = h - PAD.t - PAD.b;
+    const STEPS = 5;
+    const maxVal = niceMax(Math.max(...datasets.flatMap(d => d.data), 1));
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = FONT_C;
+
+    for (let i = 0; i <= STEPS; i++) {
+      const val = maxVal * (STEPS - i) / STEPS;
+      const y   = PAD.t + ch * i / STEPS;
+      ctx.strokeStyle = GRID_C; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l + cw, y); ctx.stroke();
+      ctx.fillStyle = TICK_C; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(val.toLocaleString('ro-RO', { maximumFractionDigits: 0 }), PAD.l - 5, y);
+    }
+
+    hitAreas = [];
+    const groupW = cw / labels.length;
+    const bGap   = 4;
+    const bPad   = Math.max(3, groupW * (isMulti ? 0.08 : 0.15));
+    const bW     = (groupW - bPad * 2 - bGap * (datasets.length - 1)) / datasets.length;
+
+    datasets.forEach((ds, di) => {
+      ds.data.forEach((val, i) => {
+        const barH = val > 0 ? (val / maxVal) * ch : 0;
+        const x    = PAD.l + i * groupW + bPad + di * (bW + bGap);
+        const y    = PAD.t + ch - barH;
+        const col  = Array.isArray(ds.colors) ? ds.colors[i % ds.colors.length] : ds.color;
+        const isHov = drillable && !isMulti && hovered === i;
+        ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.8);
+        ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        if (ctx.roundRect) ctx.roundRect(x, y, bW, barH, [3, 3, 0, 0]);
+        else ctx.rect(x, y, bW, barH);
+        ctx.fill(); ctx.stroke();
+        if (!isMulti) hitAreas.push({ i, x, y: PAD.t, w: bW, h: ch });
       });
-      return {
-        label: ds.label, data,
-        backgroundColor: ds.color + '99',
-        borderColor: ds.color,
-        borderWidth: 1.5,
-        borderRadius: 4,
-      };
     });
-    return {
-      type: 'bar',
-      data: { labels, datasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top', labels: { font: fontDef, padding: 14, usePointStyle: true } },
-          tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('ro-RO')}` } },
-        },
-        scales: {
-          x: { grid: { color: gridColor }, ticks: { font: fontDef } },
-          y: { grid: { color: gridColor }, ticks: { font: fontDef } },
-        },
-      },
-    };
-  }
 
-  /* ── Simple bar ── */
-  if (chartType === 'bar') {
-    const { labels, values } = aggregate(rows, cfg.labelKey, cfg.valueKey);
-    const bg = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length] + 'BB');
-    const br = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
-    const barCfg = {
-      type: 'bar',
-      data: { labels, datasets: [{ label: cfg.label, data: values, backgroundColor: bg, borderColor: br, borderWidth: 1.5, borderRadius: 4 }] },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        indexAxis: cfg.horiz ? 'y' : 'x',
-        plugins: {
-          legend: { display: false },
-          tooltip: { callbacks: { label: ctx => ` ${(cfg.horiz ? ctx.parsed.x : ctx.parsed.y).toLocaleString('ro-RO')}` } },
-        },
-        scales: {
-          x: { grid: { color: gridColor }, ticks: { font: fontDef } },
-          y: { grid: { color: gridColor }, ticks: { font: fontDef } },
-        },
-      },
-    };
-    if (isDrillable(section, 'bar')) {
-      barCfg.options.onClick = (event, elements) => {
-        if (!elements.length) return;
-        openDrugModal(section, labels[elements[0].index]);
-      };
-      barCfg.options.onHover = (event, elements) => {
-        const t = event.native?.target;
-        if (t) t.style.cursor = elements.length ? 'pointer' : 'default';
-      };
+    ctx.fillStyle = TICK_C; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+    const maxLblW = groupW - 4;
+    labels.forEach((lbl, i) => {
+      ctx.fillText(fitText(ctx, String(lbl), maxLblW), PAD.l + i * groupW + groupW / 2, PAD.t + ch + 8);
+    });
+
+    if (isMulti) {
+      let lx = PAD.l;
+      ctx.textBaseline = 'middle';
+      datasets.forEach(ds => {
+        ctx.fillStyle = ds.color;
+        ctx.fillRect(lx, h - 18, 12, 12);
+        ctx.fillStyle = TICK_C; ctx.textAlign = 'left';
+        ctx.fillText(ds.label, lx + 16, h - 12);
+        lx += ctx.measureText(ds.label).width + 36;
+      });
     }
-    return barCfg;
   }
 
-  /* ── Doughnut ── */
-  if (chartType === 'pie') {
-    const { labels, values } = aggregate(rows, cfg.labelKey, cfg.valueKey);
-    const bg = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length] + 'BB');
-    const br = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
-    const pieCfg = {
-      type: 'doughnut',
-      data: { labels, datasets: [{ label: cfg.label, data: values, backgroundColor: bg, borderColor: br, borderWidth: 2, hoverOffset: 8 }] },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'right', labels: { font: fontDef, padding: 14, usePointStyle: true, boxWidth: 12 } },
-          tooltip: {
-            callbacks: {
-              label: ctx => {
-                const total = ctx.dataset.data.reduce((a, b) => a + b, 0);
-                const pct = total > 0 ? ((ctx.parsed / total) * 100).toFixed(1) : 0;
-                return ` ${ctx.label}: ${ctx.parsed.toLocaleString('ro-RO')} (${pct}%)`;
-              },
-            },
-          },
-        },
-        cutout: '52%',
-      },
-    };
-    if (isDrillable(section, 'pie')) {
-      pieCfg.options.onClick = (event, elements) => {
-        if (!elements.length) return;
-        openDrugModal(section, labels[elements[0].index]);
-      };
-      pieCfg.options.onHover = (event, elements) => {
-        const t = event.native?.target;
-        if (t) t.style.cursor = elements.length ? 'pointer' : 'default';
-      };
+  function barAt(e) {
+    const r  = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    return hitAreas.findIndex(a => mx >= a.x && mx <= a.x + a.w && my >= a.y && my <= a.y + a.h);
+  }
+  function onMove(e) {
+    const idx = barAt(e);
+    if (idx !== hovered) {
+      hovered = idx;
+      canvas.style.cursor = (idx >= 0 && drillable) ? 'pointer' : 'default';
+      draw();
     }
-    return pieCfg;
+  }
+  function onClick(e) {
+    const idx = barAt(e);
+    if (idx >= 0 && onBarClick) onBarClick(labels[idx]);
   }
 
-  return null;
+  draw();
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('click', onClick);
+  return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
+}
+
+// ── Horizontal bar ────────────────────────────────────────────────
+function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarClick }) {
+  let hovered  = -1;
+  let hitAreas = [];
+
+  function draw() {
+    const { ctx, w, h } = setupCanvas(canvas);
+    const LBL_W = Math.min(160, w * 0.28);
+    const PAD   = { t: 10, r: 70, b: 24, l: LBL_W + 10 };
+    const cw    = w - PAD.l - PAD.r;
+    const ch    = h - PAD.t - PAD.b;
+    const STEPS = 4;
+    const maxVal = niceMax(Math.max(...values, 1));
+
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = FONT_C;
+
+    for (let i = 0; i <= STEPS; i++) {
+      const val = maxVal * i / STEPS;
+      const x   = PAD.l + cw * i / STEPS;
+      ctx.strokeStyle = GRID_C; ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t + ch); ctx.stroke();
+      ctx.fillStyle = TICK_C; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText(val.toLocaleString('ro-RO', { maximumFractionDigits: 0 }), x, PAD.t + ch + 4);
+    }
+
+    hitAreas = [];
+    const rowH = ch / labels.length;
+    const bPad = Math.max(2, rowH * 0.15);
+    const bH   = rowH - bPad * 2;
+
+    labels.forEach((lbl, i) => {
+      const val  = values[i] || 0;
+      const barW = (val / maxVal) * cw;
+      const x    = PAD.l;
+      const y    = PAD.t + i * rowH + bPad;
+      const col  = colors[i % colors.length];
+      const isHov = drillable && hovered === i;
+
+      ctx.fillStyle = TICK_C; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      ctx.fillText(fitText(ctx, String(lbl), LBL_W - 6), PAD.l - 8, y + bH / 2);
+
+      ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.8);
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      if (ctx.roundRect) ctx.roundRect(x, y, barW, bH, [0, 3, 3, 0]);
+      else ctx.rect(x, y, barW, bH);
+      ctx.fill(); ctx.stroke();
+
+      ctx.fillStyle = TICK_C; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText(val.toLocaleString('ro-RO', { maximumFractionDigits: 1 }), x + barW + 5, y + bH / 2);
+
+      hitAreas.push({ i, x, y, w: cw, h: bH });
+    });
+  }
+
+  function barAt(e) {
+    const r  = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    return hitAreas.findIndex(a => mx >= a.x && mx <= a.x + a.w && my >= a.y && my <= a.y + a.h);
+  }
+  function onMove(e) {
+    const idx = barAt(e);
+    if (idx !== hovered) {
+      hovered = idx;
+      canvas.style.cursor = (idx >= 0 && drillable) ? 'pointer' : 'default';
+      draw();
+    }
+  }
+  function onClick(e) {
+    const idx = barAt(e);
+    if (idx >= 0 && onBarClick) onBarClick(labels[idx]);
+  }
+
+  draw();
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('click', onClick);
+  return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
+}
+
+// ── Doughnut chart ────────────────────────────────────────────────
+function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClick }) {
+  let hovered = -1;
+  let slices  = [];
+
+  function draw() {
+    const { ctx, w, h } = setupCanvas(canvas);
+    ctx.clearRect(0, 0, w, h);
+    ctx.font = FONT_C;
+
+    const total = values.reduce((a, b) => a + b, 0);
+    if (total <= 0) return;
+
+    const LEGEND_W = Math.min(200, w * 0.36);
+    const chartW   = w - LEGEND_W;
+    const cx = chartW / 2, cy = h / 2;
+    const r  = Math.min(cx, cy) * 0.78;
+    const ir = r * 0.52;
+
+    slices = [];
+    let angle = -Math.PI / 2;
+    values.forEach((val, i) => {
+      const arc   = (val / total) * Math.PI * 2;
+      const isHov = drillable && hovered === i;
+      const col   = colors[i % colors.length];
+      const rr    = isHov ? r * 1.04 : r;
+      ctx.beginPath();
+      ctx.moveTo(cx, cy);
+      ctx.arc(cx, cy, rr, angle, angle + arc);
+      ctx.closePath();
+      ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.82);
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+      ctx.fill(); ctx.stroke();
+      slices.push({ i, startAngle: angle, endAngle: angle + arc, cx, cy, r: rr });
+      angle += arc;
+    });
+
+    ctx.beginPath(); ctx.arc(cx, cy, ir, 0, Math.PI * 2);
+    ctx.fillStyle = '#fff'; ctx.fill();
+
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    if (hovered >= 0) {
+      const pct = ((values[hovered] / total) * 100).toFixed(1);
+      ctx.fillStyle = '#1E293B'; ctx.font = "bold 14px 'Inter', system-ui, sans-serif";
+      ctx.fillText(pct + '%', cx, cy - 8);
+      ctx.font = FONT_C; ctx.fillStyle = TICK_C;
+      ctx.fillText(fitText(ctx, labels[hovered], ir * 1.6), cx, cy + 10);
+    } else {
+      ctx.fillStyle = TICK_C;
+      ctx.fillText('Total: ' + total.toLocaleString('ro-RO', { maximumFractionDigits: 0 }), cx, cy);
+    }
+
+    const lineH  = 22;
+    const startY = (h - labels.length * lineH) / 2;
+    ctx.textBaseline = 'middle';
+    labels.forEach((lbl, i) => {
+      const y   = startY + i * lineH + lineH / 2;
+      const col = colors[i % colors.length];
+      const pct = ((values[i] / total) * 100).toFixed(1);
+      ctx.fillStyle = hexAlpha(col, hovered === i ? 1 : 0.82);
+      ctx.beginPath(); ctx.arc(w - LEGEND_W + 10, y, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = TICK_C; ctx.textAlign = 'left';
+      ctx.fillText(fitText(ctx, `${lbl} (${pct}%)`, LEGEND_W - 28), w - LEGEND_W + 22, y);
+    });
+  }
+
+  function sliceAt(e) {
+    const r  = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left, my = e.clientY - r.top;
+    for (const s of slices) {
+      const dx = mx - s.cx, dy = my - s.cy;
+      if (Math.sqrt(dx * dx + dy * dy) > s.r * 1.1) continue;
+      let a = Math.atan2(dy, dx);
+      if (slices.length && a < slices[0].startAngle) a += Math.PI * 2;
+      if (a >= s.startAngle && a < s.endAngle) return s.i;
+    }
+    return -1;
+  }
+  function onMove(e) {
+    const idx = sliceAt(e);
+    if (idx !== hovered) {
+      hovered = idx;
+      canvas.style.cursor = (idx >= 0 && drillable) ? 'pointer' : 'default';
+      draw();
+    }
+  }
+  function onClick(e) {
+    const idx = sliceAt(e);
+    if (idx >= 0 && onSliceClick) onSliceClick(labels[idx]);
+  }
+
+  draw();
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('click', onClick);
+  return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
 }
 
 // ── Render chart ──────────────────────────────────────────────────
@@ -421,7 +609,7 @@ function renderChart(section, rows, chartType) {
   if (!container) return;
 
   if (chartInstances[section]) {
-    chartInstances[section].destroy();
+    chartInstances[section]();
     chartInstances[section] = null;
   }
 
@@ -430,15 +618,53 @@ function renderChart(section, rows, chartType) {
     return;
   }
 
-  const config = buildChartConfig(section, rows, chartType);
-  if (!config) return;
+  const cfg = CHART_MAP[section]?.[chartType];
+  if (!cfg) return;
 
-  const hint = isDrillable(section, chartType)
+  const drillable = isDrillable(section, chartType);
+  const hint = drillable
     ? '<p class="chart-hint"><svg width="12" height="12" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path stroke-linecap="round" d="M12 8v4m0 4h.01"/></svg> Apasă pe un element din grafic pentru mai multe detalii</p>'
     : '';
-  container.innerHTML = `<div class="chart-container"><canvas id="chart-${section}"></canvas></div>${hint}`;
-  const ctx = document.getElementById('chart-' + section);
-  chartInstances[section] = new Chart(ctx, config);
+  container.innerHTML = `<div class="chart-container"><canvas id="chart-${section}" style="width:100%;height:100%;display:block;"></canvas></div>${hint}`;
+  const cvs = document.getElementById('chart-' + section);
+
+  if (chartType === 'pie') {
+    const { labels, values } = aggregate(rows, cfg.labelKey, cfg.valueKey);
+    const colors = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
+    chartInstances[section] = createDoughnut(cvs, {
+      labels, values, colors, drillable,
+      onSliceClick: drillable ? lbl => openDrugModal(section, lbl) : null,
+    });
+    return;
+  }
+
+  if (cfg.multi) {
+    const labels   = [...new Set(rows.map(r => String(r[cfg.labelKey] ?? '')))];
+    const datasets = cfg.datasets.map(ds => ({
+      label: ds.label, color: ds.color,
+      data:  labels.map(lbl =>
+        rows.filter(r => String(r[cfg.labelKey]) === lbl)
+            .reduce((s, r) => s + (parseFloat(r[ds.key]) || 0), 0)
+      ),
+    }));
+    chartInstances[section] = createVerticalBar(cvs, { labels, datasets, drillable: false, onBarClick: null });
+    return;
+  }
+
+  const { labels, values } = aggregate(rows, cfg.labelKey, cfg.valueKey);
+  const colors = labels.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
+  if (cfg.horiz) {
+    chartInstances[section] = createHorizontalBar(cvs, {
+      labels, values, colors, drillable,
+      onBarClick: drillable ? lbl => openDrugModal(section, lbl) : null,
+    });
+  } else {
+    chartInstances[section] = createVerticalBar(cvs, {
+      labels, datasets: [{ label: cfg.label, color: colors[0], colors, data: values }],
+      drillable,
+      onBarClick: drillable ? lbl => openDrugModal(section, lbl) : null,
+    });
+  }
 }
 
 // ── Render data (dispatch to table or chart) ──────────────────────

@@ -4,7 +4,6 @@ class DrugDetailRepository
 {
     public function __construct(private PDO $pdo) {}
 
-    /** Aggregate confiscation totals for a drug name */
     public function getConfiscariSummary(string $drugName): array
     {
         $stmt = $this->pdo->prepare(
@@ -22,7 +21,6 @@ class DrugDetailRepository
         return $stmt->fetch() ?: [];
     }
 
-    /** Get the category name for a drug (via tipuri_droguri → categorii_droguri) */
     public function getDrugCategoryName(string $drugName): ?string
     {
         $stmt = $this->pdo->prepare(
@@ -37,7 +35,6 @@ class DrugDetailRepository
         return $row ? $row['nume'] : null;
     }
 
-    /** All urgente sub-breakdowns for a category name */
     public function getUrgenteBreakdowns(string $categoryName): array
     {
         return [
@@ -48,7 +45,6 @@ class DrugDetailRepository
         ];
     }
 
-    /** All tratament sub-breakdowns for a category name */
     public function getTratamentBreakdowns(string $categoryName): array
     {
         return [

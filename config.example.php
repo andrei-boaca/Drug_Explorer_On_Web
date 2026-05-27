@@ -1,12 +1,11 @@
 <?php
 define('DB_HOST', 'localhost');
 define('DB_NAME', 'statistici_droguri');
-define('DB_USER', 'web_user');      
-define('DB_PASS', 'proiect_web');          
+define('DB_USER', 'web_user');
+define('DB_PASS', 'SCHIMBA_PAROLA_AICI');
 define('DB_CHARSET', 'utf8mb4');
 
-define('GROQ_API_KEY', getenv('GROQ_API_KEY') ?: '');
-
+define('GROQ_API_KEY', 'PUNE_CHEIA_GROQ_AICI');
 
 function getConnection(): PDO {
     static $pdo = null;

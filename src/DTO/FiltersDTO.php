@@ -2,11 +2,6 @@
 
 class FiltersDTO
 {
-    /**
-     * @param FilterOptionDTO[] $droguri
-     * @param FilterOptionDTO[] $categorii
-     * @param FilterOptionDTO[] $boli
-     */
     public function __construct(
         public array $droguri,
         public array $categorii,

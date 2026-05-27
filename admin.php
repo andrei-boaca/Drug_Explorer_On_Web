@@ -1,17 +1,11 @@
 <?php
-// ===================================================================
-// admin.php – Modul de administrare DrugExplorer
-// Gestionează autentificarea și operațiunile CRUD pentru date de referință
-// ===================================================================
 session_start();
 require_once __DIR__ . '/config.php';
 
-// ─── Credentiale admin ────────────────────────────────────────────
 // IMPORTANT: schimbă parola înainte de deployment în producție!
 define('ADMIN_USER', 'admin');
 define('ADMIN_PASS', 'admin123');
 
-// ─── CSRF: generăm un token unic pe sesiune ───────────────────────
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(16));
 }
@@ -24,7 +18,6 @@ function verifyCsrf(): void {
     }
 }
 
-// ─── Gestionare acțiuni POST (Post/Redirect/Get pattern) ─────────
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
 
@@ -52,7 +45,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             switch ($action) {
 
-                // ── Tipuri droguri ────────────────────────────────
                 case 'add_drug':
                     $name  = trim($_POST['name'] ?? '');
                     $catId = intval($_POST['cat_id'] ?? 0) ?: null;
@@ -70,7 +62,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $_SESSION['flash'] = ['type' => 'ok', 'msg' => "Drogul „{$name}\" a fost șters."];
                     break;
 
-                // ── Categorii droguri ─────────────────────────────
                 case 'add_category':
                     $name = trim($_POST['name'] ?? '');
                     if ($name === '') throw new RuntimeException('Numele categoriei este obligatoriu.');
@@ -97,12 +88,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-// ─── Stare sesiune ────────────────────────────────────────────────
 $isLoggedIn = !empty($_SESSION['admin_logged_in']);
 $flash      = $_SESSION['flash'] ?? null;
 unset($_SESSION['flash']);
 
-// ─── Incarcare date (numai daca admin e autentificat) ─────────────
 $drugs = $categories = $stats = [];
 if ($isLoggedIn) {
     $pdo = getConnection();
@@ -125,7 +114,6 @@ if ($isLoggedIn) {
     ];
 }
 
-// ─── Helper escape ────────────────────────────────────────────────
 function esc(string $v): string {
     return htmlspecialchars($v, ENT_QUOTES, 'UTF-8');
 }
@@ -137,13 +125,11 @@ function esc(string $v): string {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin – DrugExplorer</title>
   <style>
-    /* ── Reset & base ── */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     body { font-family: 'Inter', system-ui, sans-serif; background: #F1F5F9; color: #1E293B; font-size: 14px; }
     a { color: #2563EB; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
-    /* ── Header ── */
     .adm-header {
       background: #1E293B; color: #fff;
       padding: 0 2rem;
@@ -159,10 +145,8 @@ function esc(string $v): string {
     }
     .adm-header form button:hover { background: rgba(255,255,255,.1); }
 
-    /* ── Layout ── */
     .adm-main { max-width: 1100px; margin: 2rem auto; padding: 0 1.5rem 4rem; }
 
-    /* ── Flash messages ── */
     .flash {
       padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1.25rem;
       font-size: .875rem; font-weight: 500;
@@ -170,7 +154,6 @@ function esc(string $v): string {
     .flash.ok  { background: #DCFCE7; color: #166534; border: 1px solid #86EFAC; }
     .flash.err { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; }
 
-    /* ── Login card ── */
     .login-wrap { display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 52px); }
     .login-card {
       background: #fff; border: 1px solid #E2E8F0;
@@ -193,7 +176,6 @@ function esc(string $v): string {
     }
     .login-card .btn-login:hover { background: #1D4ED8; }
 
-    /* ── Stats grid ── */
     .stats-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: .75rem; margin-bottom: 2rem; }
     .stat-tile {
       background: #fff; border: 1px solid #E2E8F0; border-radius: 10px;
@@ -202,7 +184,6 @@ function esc(string $v): string {
     .stat-tile .num { font-size: 1.6rem; font-weight: 700; color: #2563EB; }
     .stat-tile .lbl { font-size: .75rem; color: #64748B; margin-top: .2rem; }
 
-    /* ── Section card ── */
     .adm-card {
       background: #fff; border: 1px solid #E2E8F0; border-radius: 10px;
       box-shadow: 0 1px 4px rgba(0,0,0,.04);
@@ -215,7 +196,6 @@ function esc(string $v): string {
     }
     .adm-card-body { padding: 1.25rem; }
 
-    /* ── Add form ── */
     .add-form { display: flex; gap: .75rem; flex-wrap: wrap; margin-bottom: 1.25rem; align-items: flex-end; }
     .add-form label { font-size: .78rem; font-weight: 600; color: #64748B; display: block; margin-bottom: .3rem; }
     .add-form input[type="text"],
@@ -231,7 +211,6 @@ function esc(string $v): string {
     }
     .btn-add:hover { background: #1D4ED8; }
 
-    /* ── Data table ── */
     .adm-table { width: 100%; border-collapse: collapse; font-size: .86rem; }
     .adm-table th {
       text-align: left; padding: .55rem .8rem;
@@ -254,7 +233,6 @@ function esc(string $v): string {
     }
     .empty-note { color: #94A3B8; font-style: italic; font-size: .875rem; text-align: center; padding: 1.5rem 0; }
 
-    /* ── Responsive ── */
     @media (max-width: 600px) {
       .adm-main { padding: 0 1rem 3rem; }
       .add-form { flex-direction: column; }
@@ -283,7 +261,6 @@ function esc(string $v): string {
   <?php endif; ?>
 
   <?php if (!$isLoggedIn): ?>
-  <!-- ═══════════════════════════════════════ FORMULAR LOGIN ══ -->
   <div class="login-wrap">
     <div class="login-card">
       <h1>Autentificare Admin</h1>
@@ -302,14 +279,12 @@ function esc(string $v): string {
   </div>
 
   <?php else: ?>
-  <!-- ════════════════════════════════════════ PANOU ADMIN ══════ -->
 
   <h2 style="margin-bottom:1.25rem;font-size:1.25rem;color:#1E293B;">
     Panou de administrare
     <a href="index.php" style="font-size:.8rem;font-weight:400;margin-left:1rem;color:#64748B;">← Înapoi la aplicație</a>
   </h2>
 
-  <!-- ── Statistici generale ── -->
   <div class="stats-grid">
     <?php foreach ($stats as $s): ?>
     <div class="stat-tile">
@@ -319,7 +294,6 @@ function esc(string $v): string {
     <?php endforeach; ?>
   </div>
 
-  <!-- ── Gestionare tipuri droguri ── -->
   <div class="adm-card">
     <div class="adm-card-title">Tipuri de droguri</div>
     <div class="adm-card-body">
@@ -378,6 +352,7 @@ function esc(string $v): string {
                 <button type="submit" class="btn-del">Șterge</button>
               </form>
             </td>
+        
           </tr>
           <?php endforeach; ?>
         </tbody>
@@ -386,7 +361,6 @@ function esc(string $v): string {
     </div>
   </div>
 
-  <!-- ── Gestionare categorii ── -->
   <div class="adm-card">
     <div class="adm-card-title">Categorii de droguri</div>
     <div class="adm-card-body">

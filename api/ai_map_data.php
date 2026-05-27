@@ -94,27 +94,32 @@ Rules:
 PROMPT;
 
     $payload = json_encode([
-        'model'       => 'llama-3.3-70b-versatile',
-        'messages'    => [['role' => 'user', 'content' => $prompt]],
-        'max_tokens'  => 2048,
-        'temperature' => 0.3,
+        'model'           => 'llama-3.3-70b-versatile',
+        'messages'        => [['role' => 'user', 'content' => $prompt]],
+        'max_tokens'      => 4096,
+        'temperature'     => 0.3,
+        'response_format' => ['type' => 'json_object'],
     ]);
 
-    $ch = curl_init('https://api.groq.com/openai/v1/chat/completions');
-    curl_setopt_array($ch, [
-        CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_POST           => true,
-        CURLOPT_POSTFIELDS     => $payload,
-        CURLOPT_HTTPHEADER     => [
-            'Content-Type: application/json',
-            'Authorization: Bearer ' . GROQ_API_KEY,
+    $context = stream_context_create([
+        'http' => [
+            'method'  => 'POST',
+            'header'  => implode("\r\n", [
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . GROQ_API_KEY,
+            ]),
+            'content' => $payload,
+            'timeout' => 30,
+            'ignore_errors' => true,
         ],
-        CURLOPT_TIMEOUT => 30,
     ]);
 
-    $raw      = curl_exec($ch);
-    $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
+    $raw      = @file_get_contents('https://api.groq.com/openai/v1/chat/completions', false, $context);
+    $httpCode = 0;
+    if (isset($http_response_header)) {
+        preg_match('/HTTP\/\S+\s+(\d+)/', $http_response_header[0] ?? '', $m);
+        $httpCode = (int) ($m[1] ?? 0);
+    }
 
     if ($raw === false || $httpCode !== 200) {
         throw new RuntimeException('Groq API unavailable. HTTP ' . $httpCode);
@@ -124,13 +129,31 @@ PROMPT;
     $text    = $apiResp['choices'][0]['message']['content'] ?? '';
 
     $text = trim($text);
-    $text = preg_replace('/^```(?:json)?\s*/i', '', $text);
-    $text = preg_replace('/```.*$/s', '', $text);
-    $text = trim($text);
 
+    // Try to parse as-is first
     $data = json_decode($text, true);
+
+    // If that fails, extract between first { and last } and attempt repair
     if (!$data || !isset($data['scores'])) {
-        throw new RuntimeException('Raspuns invalid de la Groq.');
+        $start = strpos($text, '{');
+        $end   = strrpos($text, '}');
+        if ($start !== false && $end !== false && $end > $start) {
+            $text = substr($text, $start, $end - $start + 1);
+            $data = json_decode($text, true);
+        }
+    }
+
+    // Last resort: try appending missing closing brackets for truncated responses
+    if (!$data || !isset($data['scores'])) {
+        foreach (["\n]\n}", "\n  }\n]\n}"] as $suffix) {
+            $candidate = $text . $suffix;
+            $data = json_decode($candidate, true);
+            if ($data && isset($data['scores'])) break;
+        }
+    }
+
+    if (!$data || !isset($data['scores'])) {
+        throw new RuntimeException('Raspuns invalid de la Groq. JSON error: ' . json_last_error_msg());
     }
 
     return $data;

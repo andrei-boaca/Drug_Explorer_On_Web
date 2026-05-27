@@ -2,9 +2,8 @@
 require_once __DIR__ . '/_base.php';
 
 $section = $_GET['section'] ?? '';
-$format  = $_GET['format']  ?? null;
+$format = $_GET['format'] ?? null;
 
-// If a format param is present it is an export request
 if ($format !== null) {
     require_once __DIR__ . '/../src/Controller/ExportController.php';
     (new ExportController(

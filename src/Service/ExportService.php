@@ -17,12 +17,6 @@ class ExportService
 {
     public function __construct(private PDO $pdo) {}
 
-    /**
-     * Returns rows as plain arrays for the requested section,
-     * applying the same filters as the individual endpoints.
-     *
-     * @return array[]|null  null when the section name is not recognised
-     */
     public function getExportData(string $section, array $params): ?array
     {
         $an          = $params['an']           ?? null;

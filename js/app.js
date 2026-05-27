@@ -1,84 +1,77 @@
-/* ================================================================
-   app.js – DrugExplorer · AJAX + Chart.js visualizare
-   ================================================================ */
-
-// ── Chart colours (10 vivid, high-contrast on white) ─────────────
 const CHART_COLORS = [
   '#2563EB', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6',
   '#EC4899', '#0EA5E9', '#F97316', '#84CC16', '#14B8A6',
 ];
 
-// ── Column definitions ────────────────────────────────────────────
 const COLUMNS = {
   confiscari: [
-    { key: 'drog',       label: 'Drog' },
-    { key: 'grame',      label: 'Grame',       num: true },
-    { key: 'comprimate', label: 'Comprimate',  num: true },
-    { key: 'doze',       label: 'Doze',        num: true },
-    { key: 'mililitri',  label: 'mL',          num: true },
+    { key: 'drog', label: 'Drog' },
+    { key: 'grame', label: 'Grame', num: true },
+    { key: 'comprimate', label: 'Comprimate', num: true },
+    { key: 'doze', label: 'Doze', num: true },
+    { key: 'mililitri', label: 'mL', num: true },
     { key: 'nr_capturi', label: 'Nr. capturi', num: true },
-    { key: 'an',         label: 'An' },
+    { key: 'an', label: 'An' },
   ],
   condamnari: [
-    { key: 'numar',       label: 'Nr. condamnati', num: true },
-    { key: 'sex',         label: 'Sex',            badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
-    { key: 'varsta_grup', label: 'Grup varsta',    badge: { Minor: 'badge-minor', Major: 'badge-major' } },
-    { key: 'an',          label: 'An' },
+    { key: 'numar', label: 'Nr. condamnati', num: true },
+    { key: 'sex', label: 'Sex', badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
+    { key: 'varsta_grup', label: 'Grup varsta', badge: { Minor: 'badge-minor', Major: 'badge-major' } },
+    { key: 'an', label: 'An' },
   ],
   urgente: [
-    { key: 'categorie',   label: 'Categorie drog' },
-    { key: 'sex',         label: 'Sex',            badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
-    { key: 'nr_pacienti', label: 'Nr. pacienti',   num: true },
-    { key: 'an',          label: 'An' },
+    { key: 'categorie', label: 'Categorie drog' },
+    { key: 'sex', label: 'Sex', badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
+    { key: 'nr_pacienti', label: 'Nr. pacienti', num: true },
+    { key: 'an', label: 'An' },
   ],
   tratament: [
-    { key: 'categorie',   label: 'Categorie drog' },
-    { key: 'regim',       label: 'Regim' },
+    { key: 'categorie', label: 'Categorie drog' },
+    { key: 'regim', label: 'Regim' },
     { key: 'nr_pacienti', label: 'Nr. pacienti', num: true },
-    { key: 'an',          label: 'An' },
+    { key: 'an', label: 'An' },
   ],
   actiuni: [
-    { key: 'proiect',        label: 'Proiect' },
+    { key: 'proiect', label: 'Proiect' },
     { key: 'nr_beneficiari', label: 'Nr. beneficiari', num: true },
-    { key: 'an',             label: 'An' },
+    { key: 'an', label: 'An' },
   ],
   boli: [
-    { key: 'boala',         label: 'Boala' },
-    { key: 'sex',           label: 'Sex',       badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
-    { key: 'nr_testati',    label: 'Testati',   num: true },
-    { key: 'nr_pozitivi',   label: 'Pozitivi',  num: true },
-    { key: 'rata_pozitivi', label: 'Rata (%)',  num: true },
+    { key: 'boala', label: 'Boala' },
+    { key: 'sex', label: 'Sex', badge: { Masculin: 'badge-m', Feminin: 'badge-f' } },
+    { key: 'nr_testati', label: 'Testati', num: true },
+    { key: 'nr_pozitivi', label: 'Pozitivi', num: true },
+    { key: 'rata_pozitivi', label: 'Rata (%)', num: true },
   ],
 };
 
-// ── Chart mapping per section ─────────────────────────────────────
 const CHART_MAP = {
-  confiscari:  {
-    bar: { labelKey: 'drog',       valueKey: 'grame',          label: 'Grame confiscate per drog',        horiz: true  },
-    pie: { labelKey: 'drog',       valueKey: 'nr_capturi',     label: 'Capturi per tip drog'               },
+  confiscari: {
+    bar: { labelKey: 'drog', valueKey: 'grame', label: 'Grame confiscate per drog', horiz: true },
+    pie: { labelKey: 'drog', valueKey: 'nr_capturi', label: 'Capturi per tip drog' },
   },
-  condamnari:  {
-    bar: { labelKey: 'varsta_grup',valueKey: 'numar',          label: 'Condamnari per grup varsta',       horiz: false },
-    pie: { labelKey: 'sex',        valueKey: 'numar',          label: 'Distributie pe sex'                 },
+  condamnari: {
+    bar: { labelKey: 'varsta_grup', valueKey: 'numar', label: 'Condamnari per grup varsta', horiz: false },
+    pie: { labelKey: 'sex', valueKey: 'numar', label: 'Distributie pe sex' },
   },
-  urgente:     {
-    bar: { labelKey: 'categorie',  valueKey: 'nr_pacienti',    label: 'Pacienti urgente per categorie',   horiz: true  },
-    pie: { labelKey: 'categorie',  valueKey: 'nr_pacienti',    label: 'Distributie categorii drog'         },
+  urgente: {
+    bar: { labelKey: 'categorie', valueKey: 'nr_pacienti', label: 'Pacienti urgente per categorie', horiz: true },
+    pie: { labelKey: 'categorie', valueKey: 'nr_pacienti', label: 'Distributie categorii drog' },
   },
-  tratament:   {
-    bar: { labelKey: 'categorie',  valueKey: 'nr_pacienti',    label: 'Pacienti tratament per categorie', horiz: true  },
-    pie: { labelKey: 'regim',      valueKey: 'nr_pacienti',    label: 'Distributie pe regim tratament'     },
+  tratament: {
+    bar: { labelKey: 'categorie', valueKey: 'nr_pacienti', label: 'Pacienti tratament per categorie', horiz: true },
+    pie: { labelKey: 'regim', valueKey: 'nr_pacienti', label: 'Distributie pe regim tratament' },
   },
-  actiuni:     {
-    bar: { labelKey: 'proiect',    valueKey: 'nr_beneficiari', label: 'Beneficiari per proiect',          horiz: true  },
-    pie: { labelKey: 'proiect',    valueKey: 'nr_beneficiari', label: 'Distributie beneficiari'            },
+  actiuni: {
+    bar: { labelKey: 'proiect', valueKey: 'nr_beneficiari', label: 'Beneficiari per proiect', horiz: true },
+    pie: { labelKey: 'proiect', valueKey: 'nr_beneficiari', label: 'Distributie beneficiari' },
   },
   boli: {
     bar: {
       multi: true,
       labelKey: 'boala',
       datasets: [
-        { key: 'nr_testati',  label: 'Testati',  color: '#2563EB' },
+        { key: 'nr_testati', label: 'Testati', color: '#2563EB' },
         { key: 'nr_pozitivi', label: 'Pozitivi', color: '#EF4444' },
       ],
       label: 'Testati vs Pozitivi per boala',
@@ -88,14 +81,12 @@ const CHART_MAP = {
   },
 };
 
-// ── State ─────────────────────────────────────────────────────────
-const sectionData    = {};   // rows cache per section
-const currentView    = {};   // 'table' | 'bar' | 'pie'
-const chartInstances = {};   // Chart.js instances
-const sortState      = {};   // { col, dir } per section
-const visitedTabs    = new Set();
+const sectionData = {};
+const currentView = {};
+const chartInstances = {};
+const sortState = {};
+const visitedTabs = new Set();
 
-// ── Helpers ───────────────────────────────────────────────────────
 function escHtml(v) {
   return String(v ?? '\u2014')
     .replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -126,7 +117,6 @@ function aggregate(rows, labelKey, valueKey) {
   return { labels, values: labels.map(l => map[l]) };
 }
 
-// ── Table rendering ───────────────────────────────────────────────
 function renderTable(section, rows) {
   if (!rows || !rows.length) {
     return '<div class="empty-state"><p>Niciun rezultat gasit.</p></div>';
@@ -162,10 +152,11 @@ function renderTable(section, rows) {
     return `<tr class="${i % 2 === 0 ? 'row-even' : 'row-odd'}">${tds}</tr>`;
   }).join('');
 
+  //trs += `<tr><td colspan="${cols.length}" class="table-footer">${printedEntries} ${printedEntries === 1 ? 'intrare' : 'intrari'}</td></tr>`;
+
   return `<div class="table-wrap"><table><thead><tr>${ths}</tr></thead><tbody>${trs}</tbody></table></div>`;
 }
 
-// ── Drug detail modal ─────────────────────────────────────────────
 const DRILLABLE_SECTIONS = ['confiscari', 'urgente', 'tratament'];
 
 function isDrillable(section, chartType) {
@@ -175,15 +166,15 @@ function isDrillable(section, chartType) {
 }
 
 function openDrugModal(section, label) {
-  const modal    = document.getElementById('drug-modal');
-  const title    = document.getElementById('drug-modal-title');
+  const modal = document.getElementById('drug-modal');
+  const title = document.getElementById('drug-modal-title');
   const subtitle = document.getElementById('drug-modal-subtitle');
-  const body     = document.getElementById('drug-modal-body');
+  const body = document.getElementById('drug-modal-body');
   if (!modal) return;
 
   const sectionLabels = { confiscari: 'Confiscari', urgente: 'Urgente medicale', tratament: 'Tratament' };
   subtitle.textContent = sectionLabels[section] || section;
-  title.textContent    = label;
+  title.textContent = label;
   body.innerHTML = '<div class="loading-state"><div class="spinner"></div><span>Se incarca informatiile...</span></div>';
   modal.classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -292,21 +283,19 @@ function renderBreakdowns(title, breakdowns, labels) {
   return html;
 }
 
-// ── Modal close bindings (set up after DOM ready) ─────────────────
 document.addEventListener('DOMContentLoaded', () => {
   document.getElementById('drug-modal-close')?.addEventListener('click', closeDrugModal);
   document.getElementById('drug-modal-overlay')?.addEventListener('click', closeDrugModal);
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrugModal(); });
 });
 
-// ── Native Canvas Charts (replaces Chart.js) ────────────────────
-const FONT_C  = "11px 'Inter', system-ui, sans-serif";
-const GRID_C  = '#E2E8F0';
-const TICK_C  = '#64748B';
+const FONT_C = "11px 'Inter', system-ui, sans-serif";
+const GRID_C = '#E2E8F0';
+const TICK_C = '#64748B';
 
 function niceMax(max) {
   if (max <= 0) return 10;
-  const exp  = Math.pow(10, Math.floor(Math.log10(max)));
+  const exp = Math.pow(10, Math.floor(Math.log10(max)));
   const frac = max / exp;
   const nice = frac <= 1 ? 1 : frac <= 2 ? 2 : frac <= 5 ? 5 : 10;
   return nice * exp;
@@ -325,16 +314,16 @@ function hexAlpha(hex, a) {
 }
 
 function setupCanvas(canvas) {
-  const dpr  = window.devicePixelRatio || 1;
+  const dpr = window.devicePixelRatio || 1;
   const rect = canvas.getBoundingClientRect();
-  canvas.width  = Math.round(rect.width  * dpr);
+  canvas.width = Math.round(rect.width * dpr);
   canvas.height = Math.round(rect.height * dpr);
   const ctx = canvas.getContext('2d');
   ctx.scale(dpr, dpr);
   return { ctx, w: rect.width, h: rect.height };
 }
 
-// ── Vertical bar (single or multi-dataset) ────────────────────────
+
 function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) {
   let hovered = -1;
   let hitAreas = [];
@@ -343,8 +332,8 @@ function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) 
   function draw() {
     const { ctx, w, h } = setupCanvas(canvas);
     const PAD = { t: 20, r: 20, b: isMulti ? 70 : 55, l: 60 };
-    const cw  = w - PAD.l - PAD.r;
-    const ch  = h - PAD.t - PAD.b;
+    const cw = w - PAD.l - PAD.r;
+    const ch = h - PAD.t - PAD.b;
     const STEPS = 5;
     const maxVal = niceMax(Math.max(...datasets.flatMap(d => d.data), 1));
 
@@ -353,7 +342,7 @@ function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) 
 
     for (let i = 0; i <= STEPS; i++) {
       const val = maxVal * (STEPS - i) / STEPS;
-      const y   = PAD.t + ch * i / STEPS;
+      const y = PAD.t + ch * i / STEPS;
       ctx.strokeStyle = GRID_C; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(PAD.l, y); ctx.lineTo(PAD.l + cw, y); ctx.stroke();
       ctx.fillStyle = TICK_C; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
@@ -362,18 +351,18 @@ function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) 
 
     hitAreas = [];
     const groupW = cw / labels.length;
-    const bGap   = 4;
-    const bPad   = Math.max(3, groupW * (isMulti ? 0.08 : 0.15));
-    const bW     = (groupW - bPad * 2 - bGap * (datasets.length - 1)) / datasets.length;
+    const bGap = 4;
+    const bPad = Math.max(3, groupW * (isMulti ? 0.08 : 0.15));
+    const bW = (groupW - bPad * 2 - bGap * (datasets.length - 1)) / datasets.length;
 
     datasets.forEach((ds, di) => {
       ds.data.forEach((val, i) => {
         const barH = val > 0 ? (val / maxVal) * ch : 0;
-        const x    = PAD.l + i * groupW + bPad + di * (bW + bGap);
-        const y    = PAD.t + ch - barH;
-        const col  = Array.isArray(ds.colors) ? ds.colors[i % ds.colors.length] : ds.color;
+        const x = PAD.l + i * groupW + bPad + di * (bW + bGap);
+        const y = PAD.t + ch - barH;
+        const col = Array.isArray(ds.colors) ? ds.colors[i % ds.colors.length] : ds.color;
         const isHov = drillable && !isMulti && hovered === i;
-        ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.8);
+        ctx.fillStyle = hexAlpha(col, isHov ? 1 : 0.8);
         ctx.strokeStyle = col; ctx.lineWidth = 1.5;
         ctx.beginPath();
         if (ctx.roundRect) ctx.roundRect(x, y, bW, barH, [3, 3, 0, 0]);
@@ -403,7 +392,7 @@ function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) 
   }
 
   function barAt(e) {
-    const r  = canvas.getBoundingClientRect();
+    const r = canvas.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
     return hitAreas.findIndex(a => mx >= a.x && mx <= a.x + a.w && my >= a.y && my <= a.y + a.h);
   }
@@ -426,17 +415,17 @@ function createVerticalBar(canvas, { labels, datasets, drillable, onBarClick }) 
   return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
 }
 
-// ── Horizontal bar ────────────────────────────────────────────────
+
 function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarClick }) {
-  let hovered  = -1;
+  let hovered = -1;
   let hitAreas = [];
 
   function draw() {
     const { ctx, w, h } = setupCanvas(canvas);
     const LBL_W = Math.min(160, w * 0.28);
-    const PAD   = { t: 10, r: 70, b: 24, l: LBL_W + 10 };
-    const cw    = w - PAD.l - PAD.r;
-    const ch    = h - PAD.t - PAD.b;
+    const PAD = { t: 10, r: 70, b: 24, l: LBL_W + 10 };
+    const cw = w - PAD.l - PAD.r;
+    const ch = h - PAD.t - PAD.b;
     const STEPS = 4;
     const maxVal = niceMax(Math.max(...values, 1));
 
@@ -445,7 +434,7 @@ function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarC
 
     for (let i = 0; i <= STEPS; i++) {
       const val = maxVal * i / STEPS;
-      const x   = PAD.l + cw * i / STEPS;
+      const x = PAD.l + cw * i / STEPS;
       ctx.strokeStyle = GRID_C; ctx.lineWidth = 1;
       ctx.beginPath(); ctx.moveTo(x, PAD.t); ctx.lineTo(x, PAD.t + ch); ctx.stroke();
       ctx.fillStyle = TICK_C; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
@@ -455,20 +444,20 @@ function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarC
     hitAreas = [];
     const rowH = ch / labels.length;
     const bPad = Math.max(2, rowH * 0.15);
-    const bH   = rowH - bPad * 2;
+    const bH = rowH - bPad * 2;
 
     labels.forEach((lbl, i) => {
-      const val  = values[i] || 0;
+      const val = values[i] || 0;
       const barW = (val / maxVal) * cw;
-      const x    = PAD.l;
-      const y    = PAD.t + i * rowH + bPad;
-      const col  = colors[i % colors.length];
+      const x = PAD.l;
+      const y = PAD.t + i * rowH + bPad;
+      const col = colors[i % colors.length];
       const isHov = drillable && hovered === i;
 
       ctx.fillStyle = TICK_C; ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
       ctx.fillText(fitText(ctx, String(lbl), LBL_W - 6), PAD.l - 8, y + bH / 2);
 
-      ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.8);
+      ctx.fillStyle = hexAlpha(col, isHov ? 1 : 0.8);
       ctx.strokeStyle = col; ctx.lineWidth = 1.5;
       ctx.beginPath();
       if (ctx.roundRect) ctx.roundRect(x, y, barW, bH, [0, 3, 3, 0]);
@@ -483,14 +472,14 @@ function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarC
   }
 
   function barAt(e) {
-    const r  = canvas.getBoundingClientRect();
+    const r = canvas.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
     return hitAreas.findIndex(a => mx >= a.x && mx <= a.x + a.w && my >= a.y && my <= a.y + a.h);
   }
   function onMove(e) {
     const idx = barAt(e);
     if (idx !== hovered) {
-      hovered = idx;
+      hovered = idx; 
       canvas.style.cursor = (idx >= 0 && drillable) ? 'pointer' : 'default';
       draw();
     }
@@ -506,10 +495,9 @@ function createHorizontalBar(canvas, { labels, values, colors, drillable, onBarC
   return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
 }
 
-// ── Doughnut chart ────────────────────────────────────────────────
 function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClick }) {
   let hovered = -1;
-  let slices  = [];
+  let slices = [];
 
   function draw() {
     const { ctx, w, h } = setupCanvas(canvas);
@@ -520,23 +508,23 @@ function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClic
     if (total <= 0) return;
 
     const LEGEND_W = Math.min(200, w * 0.36);
-    const chartW   = w - LEGEND_W;
+    const chartW = w - LEGEND_W;
     const cx = chartW / 2, cy = h / 2;
-    const r  = Math.min(cx, cy) * 0.78;
+    const r = Math.min(cx, cy) * 0.78;
     const ir = r * 0.52;
 
     slices = [];
     let angle = -Math.PI / 2;
     values.forEach((val, i) => {
-      const arc   = (val / total) * Math.PI * 2;
+      const arc = (val / total) * Math.PI * 2;
       const isHov = drillable && hovered === i;
-      const col   = colors[i % colors.length];
-      const rr    = isHov ? r * 1.04 : r;
+      const col = colors[i % colors.length];
+      const rr = isHov ? r * 1.04 : r;
       ctx.beginPath();
       ctx.moveTo(cx, cy);
       ctx.arc(cx, cy, rr, angle, angle + arc);
       ctx.closePath();
-      ctx.fillStyle   = hexAlpha(col, isHov ? 1 : 0.82);
+      ctx.fillStyle = hexAlpha(col, isHov ? 1 : 0.82);
       ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
       ctx.fill(); ctx.stroke();
       slices.push({ i, startAngle: angle, endAngle: angle + arc, cx, cy, r: rr });
@@ -558,11 +546,11 @@ function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClic
       ctx.fillText('Total: ' + total.toLocaleString('ro-RO', { maximumFractionDigits: 0 }), cx, cy);
     }
 
-    const lineH  = 22;
+    const lineH = 22;
     const startY = (h - labels.length * lineH) / 2;
     ctx.textBaseline = 'middle';
     labels.forEach((lbl, i) => {
-      const y   = startY + i * lineH + lineH / 2;
+      const y = startY + i * lineH + lineH / 2;
       const col = colors[i % colors.length];
       const pct = ((values[i] / total) * 100).toFixed(1);
       ctx.fillStyle = hexAlpha(col, hovered === i ? 1 : 0.82);
@@ -573,7 +561,7 @@ function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClic
   }
 
   function sliceAt(e) {
-    const r  = canvas.getBoundingClientRect();
+    const r = canvas.getBoundingClientRect();
     const mx = e.clientX - r.left, my = e.clientY - r.top;
     for (const s of slices) {
       const dx = mx - s.cx, dy = my - s.cy;
@@ -603,7 +591,6 @@ function createDoughnut(canvas, { labels, values, colors, drillable, onSliceClic
   return () => { canvas.removeEventListener('mousemove', onMove); canvas.removeEventListener('click', onClick); };
 }
 
-// ── Render chart ──────────────────────────────────────────────────
 function renderChart(section, rows, chartType) {
   const container = document.getElementById('result-' + section);
   if (!container) return;
@@ -639,7 +626,7 @@ function renderChart(section, rows, chartType) {
   }
 
   if (cfg.multi) {
-    const labels   = [...new Set(rows.map(r => String(r[cfg.labelKey] ?? '')))];
+    const labels = [...new Set(rows.map(r => String(r[cfg.labelKey] ?? '')))];
     const datasets = cfg.datasets.map(ds => ({
       label: ds.label, color: ds.color,
       data:  labels.map(lbl =>
@@ -667,13 +654,11 @@ function renderChart(section, rows, chartType) {
   }
 }
 
-// ── Render data (dispatch to table or chart) ──────────────────────
 function renderData(section, rows) {
   const view = currentView[section] || 'table';
 
-  // Update result count chip
   const headerEl = document.getElementById('header-' + section);
-  const countEl  = document.getElementById('count-' + section);
+  const countEl = document.getElementById('count-' + section);
   if (headerEl) headerEl.style.display = '';
   if (countEl) {
     const n = rows ? rows.length : 0;
@@ -684,7 +669,6 @@ function renderData(section, rows) {
     const resultEl = document.getElementById('result-' + section);
     if (resultEl) {
       resultEl.innerHTML = renderTable(section, rows);
-      // Bind sortable column headers
       resultEl.querySelectorAll('th.sortable').forEach(th => {
         th.addEventListener('click', () => {
           const col = th.dataset.col;
@@ -700,7 +684,6 @@ function renderData(section, rows) {
   }
 }
 
-// ── Tab switching ─────────────────────────────────────────────────
 document.querySelectorAll('.tab-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
@@ -708,7 +691,6 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.add('active');
     const section = btn.dataset.section;
     document.getElementById('sec-' + section)?.classList.add('active');
-    // Auto-load first visit
     if (!visitedTabs.has(section)) {
       visitedTabs.add(section);
       const form = document.querySelector('#sec-' + section + ' .ajax-form');
@@ -717,11 +699,10 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
   });
 });
 
-// ── View toggle ───────────────────────────────────────────────────
 document.querySelectorAll('.view-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     const section = btn.dataset.section;
-    const view    = btn.dataset.view;
+    const view = btn.dataset.view;
     currentView[section] = view;
     document.querySelectorAll('#toggle-' + section + ' .view-btn').forEach(b => {
       b.classList.toggle('active', b.dataset.view === view);
@@ -730,7 +711,6 @@ document.querySelectorAll('.view-btn').forEach(btn => {
   });
 });
 
-// ── Populate dropdowns from /filters ─────────────────────────────
 fetch('api/router.php?section=filters')
   .then(r => r.json())
   .then(data => {
@@ -743,7 +723,6 @@ fetch('api/router.php?section=filters')
     document.querySelectorAll('select[name="boala_id"]').forEach(sel => {
       (data.boli || []).forEach(item => sel.appendChild(new Option(item.label, item.id)));
     });
-    // Auto-load the first (active) tab
     if (!visitedTabs.has('confiscari')) {
       visitedTabs.add('confiscari');
       const form = document.querySelector('#sec-confiscari .ajax-form');
@@ -752,13 +731,12 @@ fetch('api/router.php?section=filters')
   })
   .catch(() => console.error('Filtrele nu s-au putut incarca.'));
 
-// ── AJAX form submit ──────────────────────────────────────────────
 document.querySelectorAll('.ajax-form').forEach(form => {
   form.addEventListener('submit', async e => {
     e.preventDefault();
-    const section  = form.dataset.section;
+    const section = form.dataset.section;
     const resultEl = document.getElementById('result-' + section);
-    const params   = getFormParams(form);
+    const params = getFormParams(form);
     params.set('section', section);
     const btn = form.querySelector('button[type="submit"]');
 
@@ -766,7 +744,7 @@ document.querySelectorAll('.ajax-form').forEach(form => {
     if (btn) btn.disabled = true;
 
     try {
-      const res  = await fetch('api/router.php?' + params.toString());
+      const res = await fetch('api/router.php?' + params.toString());
       if (!res.ok) throw new Error('HTTP ' + res.status);
       const json = await res.json();
       if (json.error) {
@@ -785,14 +763,13 @@ document.querySelectorAll('.ajax-form').forEach(form => {
   });
 });
 
-// ── Export ────────────────────────────────────────────────────────
 document.querySelectorAll('.btn-export').forEach(btn => {
   btn.addEventListener('click', e => {
     e.preventDefault();
     const section = btn.dataset.section;
-    const format  = btn.dataset.format;
-    const form    = document.querySelector('#sec-' + section + ' .ajax-form');
-    const params  = getFormParams(form);
+    const format = btn.dataset.format;
+    const form = document.querySelector('#sec-' + section + ' .ajax-form');
+    const params = getFormParams(form);
     params.set('section', section);
     params.set('format', format);
     window.location.href = 'api/router.php?' + params.toString();

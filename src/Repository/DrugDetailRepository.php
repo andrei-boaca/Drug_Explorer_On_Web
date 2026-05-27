@@ -15,7 +15,8 @@ class DrugDetailRepository
                     SUM(c.nr_capturi) AS total_capturi
              FROM confiscari c
              JOIN tipuri_droguri t ON t.id = c.id_drog
-             WHERE t.nume = ?"
+             WHERE t.nume = ?
+             GROUP BY t.nume"
         );
         $stmt->execute([$drugName]);
         return $stmt->fetch() ?: [];

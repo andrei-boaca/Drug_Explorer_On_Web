@@ -132,14 +132,15 @@
       padding: .85rem 1rem; background: var(--surface);
     }
     .tech-tile-head {
-      display: flex; align-items: center; gap: .5rem; margin-bottom: .4rem;
+      display: flex; flex-direction: column; align-items: flex-start; gap: .3rem; margin-bottom: .5rem;
     }
     .tech-badge {
-      font-family: 'DM Mono', monospace; font-size: .72rem; font-weight: 700;
+      font-family: 'DM Mono', monospace; font-size: .7rem; font-weight: 700;
       background: var(--primary-light); color: var(--primary);
-      padding: .15em .55em; border-radius: 4px; white-space: nowrap;
+      padding: .15em .55em; border-radius: 4px;
+      word-break: break-word; max-width: 100%;
     }
-    .tech-tile-name { font-weight: 700; font-size: .85rem; color: var(--text); }
+    .tech-tile-name { font-weight: 700; font-size: .875rem; color: var(--text); }
     .tech-tile p { font-size: .8rem; color: var(--text-muted); line-height: 1.6; margin: 0; }
 
     /* Req ID */
@@ -689,8 +690,8 @@
 
         <div class="tech-tile">
           <div class="tech-tile-head">
-            <span class="tech-badge">Controller–Service–Repository</span>
-            <span class="tech-tile-name">Arhitectură back-end</span>
+            <span class="tech-badge">CSR Pattern</span>
+            <span class="tech-tile-name">Controller – Service – Repository</span>
           </div>
           <p><strong>Controller</strong> — validează parametrii HTTP și apelează Service-ul. <strong>Service</strong> — conține logica de business (agregări, transformări). <strong>Repository</strong> — execută interogările SQL prin PDO. Această separare permite testarea Service-ului independent de HTTP și Repository, și extinderea ușoară cu noi secțiuni.</p>
         </div>

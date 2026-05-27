@@ -59,15 +59,10 @@ async function initAIMap() {
 
     const ts = document.getElementById('ai-map-timestamp');
     if (ts) {
-      const src = aiData.from_cache ? 'date din cache' : 'date proaspete';
-      ts.textContent = `Ultima actualizare: ${aiData.updated_at} · ${src} · Sursa: EMCDDA / Claude AI`;
+      const src = aiData.stale ? 'date vechi (AI indisponibil)' : aiData.from_cache ? 'date din cache' : 'date proaspete';
+      ts.textContent = `Ultima actualizare: ${aiData.updated_at} · ${src} · Sursa: EMCDDA / Llama 3.3 (Groq)`;
     }
 
-    const badge = document.getElementById('ai-map-status');
-    if (badge) {
-      badge.textContent  = aiData.from_cache ? 'Cache' : 'Live';
-      badge.className    = 'ai-status-badge ' + (aiData.from_cache ? 'badge-cache' : 'badge-live');
-    }
   } catch (err) {
     mapEl.innerHTML = `<p class="empty" style="padding:2rem">Eroare la incarcarea datelor AI: ${err.message}</p>`;
     console.error('AI Map error:', err);

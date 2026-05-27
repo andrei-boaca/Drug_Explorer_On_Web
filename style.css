@@ -107,6 +107,25 @@ body {
   color: var(--text-mid);
 }
 
+.header-admin-link {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  text-decoration: none;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.header-admin-link:hover {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+}
+
 /* Romanian flag stripe */
 .ro-stripe { height: 4px; display: flex; }
 .ro-stripe div:nth-child(1) { flex: 1; background: #003DA5; }
@@ -760,6 +779,7 @@ tr:hover td { background: #EFF6FF !important; transition: background 0.1s; }
 }
 .badge-live  { background: #d1fae5; color: #065f46; }
 .badge-cache { background: #fef3c7; color: #92400e; }
+.badge-stale { background: #fee2e2; color: #991b1b; }
 
 .ai-map-body { position: relative; padding-bottom: 0.5rem; }
 

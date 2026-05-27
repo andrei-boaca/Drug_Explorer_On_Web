@@ -5,7 +5,8 @@ define('DB_USER', 'web_user');
 define('DB_PASS', 'proiect_web');          
 define('DB_CHARSET', 'utf8mb4');
 
-define('GEMINI_API_KEY', getenv('GEMINI_API_KEY') ?: 'YOUR_GEMINI_API_KEY_HERE');
+define('GROQ_API_KEY', getenv('GROQ_API_KEY') ?: '');
+
 
 function getConnection(): PDO {
     static $pdo = null;

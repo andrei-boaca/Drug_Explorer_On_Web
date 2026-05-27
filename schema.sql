@@ -224,3 +224,27 @@ CREATE TABLE `prevalenta_timp_prima_injectare` (
   `nr_pozitivi` int,
   FOREIGN KEY (`id_boala`) REFERENCES `boli`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `ai_tari_scoruri` (
+  `id`         INT PRIMARY KEY AUTO_INCREMENT,
+  `cod_tara`   VARCHAR(2)   NOT NULL,
+  `scor`       DECIMAL(4,1) NOT NULL,
+  `updated_at` DATETIME     NOT NULL,
+  INDEX idx_cod     (`cod_tara`),
+  INDEX idx_updated (`updated_at`)
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `ai_tendinte` (
+  `id`         INT PRIMARY KEY AUTO_INCREMENT,
+  `tara`       VARCHAR(100) NOT NULL,
+  `cod_tara`   VARCHAR(2)   NOT NULL,
+  `tendinta`   VARCHAR(20)  NOT NULL,
+  `motiv`      TEXT         NOT NULL,
+  `updated_at` DATETIME     NOT NULL
+) ENGINE=InnoDB;
+
+CREATE TABLE IF NOT EXISTS `ai_sumar` (
+  `id`         INT PRIMARY KEY DEFAULT 1,
+  `text`       TEXT         NOT NULL,
+  `updated_at` DATETIME     NOT NULL
+) ENGINE=InnoDB;

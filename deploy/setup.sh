@@ -86,9 +86,9 @@ PHP
 # ── 6. Import baza de date ────────────────────────────────────
 echo "[5/7] Import baza de date..."
 mysql -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "${APP_DIR}/schema.sql"
+mysql -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "${APP_DIR}/populare_extra.sql"
 mysql -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "${APP_DIR}/populare_2021.sql"
 mysql -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "${APP_DIR}/populare_2022.sql"
-mysql -u "${DB_USER}" -p"${DB_PASS}" "${DB_NAME}" < "${APP_DIR}/populare_extra.sql"
 
 # ── 7. Permisiuni fisiere ─────────────────────────────────────
 chown -R www-data:www-data "${APP_DIR}"

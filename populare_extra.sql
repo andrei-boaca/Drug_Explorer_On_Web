@@ -1,7 +1,7 @@
 SET FOREIGN_KEY_CHECKS = 0;
 
 -- ── categorii_droguri ──────────────────────────────────────────────
-INSERT INTO `categorii_droguri` (`id`, `nume`) VALUES
+INSERT IGNORE INTO `categorii_droguri` (`id`, `nume`) VALUES
 (1,  'Canabis si derivate'),
 (2,  'Opioide'),
 (3,  'Cocaina si stimulante'),
@@ -15,7 +15,7 @@ INSERT INTO `categorii_droguri` (`id`, `nume`) VALUES
 
 -- ── tipuri_droguri ─────────────────────────────────────────────────
 -- existing: id 1=Cactus/Mescalina(NULL), 2=Buprenorfina(NULL), 3=Mitraginina(NULL)
-INSERT INTO `tipuri_droguri` (`nume`, `id_categorie`) VALUES
+INSERT IGNORE INTO `tipuri_droguri` (`nume`, `id_categorie`) VALUES
 ('Cannabis',                    1),
 ('Hasis',                       1),
 ('Ulei de cannabis',            1),
@@ -66,7 +66,7 @@ INSERT INTO `tipuri_droguri` (`nume`, `id_categorie`) VALUES
 
 -- ── boli ───────────────────────────────────────────────────────────
 -- existing: 1=VHC, 2=HIV, 3=VHB
-INSERT INTO `boli` (`id`, `nume`) VALUES
+INSERT IGNORE INTO `boli` (`id`, `nume`) VALUES
 (4,  'Tuberculoza'),
 (5,  'Sifilis'),
 (6,  'Gonoreea'),
@@ -77,7 +77,7 @@ INSERT INTO `boli` (`id`, `nume`) VALUES
 
 -- ── legi ───────────────────────────────────────────────────────────
 -- existing: 1-5
-INSERT INTO `legi` (`nume`) VALUES
+INSERT IGNORE INTO `legi` (`nume`) VALUES
 ('Art.5 din Legea nr. 143/2000'),
 ('Art.6 din Legea nr. 143/2000'),
 ('Art.8 din Legea nr. 143/2000'),
@@ -91,7 +91,7 @@ INSERT INTO `legi` (`nume`) VALUES
 
 -- ── proiecte ───────────────────────────────────────────────────────
 -- existing: 1-12
-INSERT INTO `proiecte` (`nume`) VALUES
+INSERT IGNORE INTO `proiecte` (`nume`) VALUES
 ('Campania FII LIBER! (2018)'),
 ('Campania FII LIBER! (2019)'),
 ('Campania FII LIBER! (2020)'),
@@ -133,7 +133,7 @@ INSERT INTO `proiecte` (`nume`) VALUES
 
 -- ── substante ──────────────────────────────────────────────────────
 -- existing: 1-16
-INSERT INTO `substante` (`nume`, `categorie`) VALUES
+INSERT IGNORE INTO `substante` (`nume`, `categorie`) VALUES
 ('ACID ACETIC',            3),
 ('ACID ANTHRANILIC',       1),
 ('ISOSAFROLE',             1),

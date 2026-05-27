@@ -47,7 +47,7 @@ INSERT INTO `confiscari` (`id_drog`, `grame`, `comprimate`, `doze`, `mililitri`,
 -- -------------------------------------------------------------------
 -- 1. Populare tabel Nomenclator: `legi`
 -- -------------------------------------------------------------------
-INSERT INTO `legi` (`nume`) VALUES
+INSERT IGNORE INTO `legi` (`nume`) VALUES
 ('Art.2 din Legea nr. 143/2000'),
 ('Art.3 din Legea nr. 143/2000'),
 ('Art.4 din Legea nr. 143/2000'),
@@ -87,7 +87,7 @@ INSERT INTO `condamnari` (`numar`, `sex`, `minor`, `an`) VALUES
 -- -------------------------------------------------------------------
 -- 1. Populare tabel Nomenclator: `substante` (Include categoriile 1-4)
 -- -------------------------------------------------------------------
-INSERT INTO `substante` (`nume`, `categorie`) VALUES
+INSERT IGNORE INTO `substante` (`nume`, `categorie`) VALUES
 -- Categoria 1
 ('CLORHIDRAT DE EFEDRINĂ', 1),
 ('EFEDRINĂ', 1),
@@ -148,7 +148,7 @@ INSERT INTO `precursori` (`id_substanta`, `nr_operatiuni`, `an`) VALUES
 -- -------------------------------------------------------------------
 -- 1. Populare tabel Nomenclator: `proiecte`
 -- -------------------------------------------------------------------
-INSERT INTO `proiecte` (`nume`) VALUES
+INSERT IGNORE INTO `proiecte` (`nume`) VALUES
 ('Proiect național CUM SĂ CREŞTEM SĂNĂTOŞI (Nivel preșcolar)'),
 ('Proiect național ABC-UL EMOŢIILOR (Nivel primar)'),
 ('Proiect național NECENZURAT (Nivel gimnazial)'),
@@ -414,7 +414,7 @@ INSERT INTO `nivel_educational` (`id_categorie`, `nivel`, `nr_pacienti`, `an`) V
 -- -------------------------------------------------------------------
 -- 1. Populare tabel Nomenclator: `boli`
 -- -------------------------------------------------------------------
-INSERT INTO `boli` (`nume`) VALUES
+INSERT IGNORE INTO `boli` (`nume`) VALUES
 ('VHC'),
 ('HIV'),
 ('VHB');

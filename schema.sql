@@ -11,7 +11,8 @@ SET FOREIGN_KEY_CHECKS = 0;
 DROP TABLE IF EXISTS `prevalenta_timp_prima_injectare`, `prevalenta_varsta`, `prevalenta_sex`, 
                      `diagnostic_urgenta`, `cale_administrare`, `varsta_urgente`, `sex_urgente`, 
                      `ocupatie_pacienti`, `nivel_educational`, `situatie_locativa`, `surse`, 
-                     `varsta_pacienti`, `sex_pacienti`, `regim_tratament`, `actiuni`, `precursori`, 
+                     `varsta_pacienti`, `sex_pacienti`, `regim_tratament`, `model_consum_urgente`,
+                     `actiuni`, `precursori`, 
                      `lege_condamnari`, `confiscari`, `tipuri_droguri`, `condamnari`, `substante`, 
                      `proiecte`, `boli`, `legi`, `categorii_droguri`;
 
@@ -160,6 +161,15 @@ CREATE TABLE `ocupatie_pacienti` (
   FOREIGN KEY (`id_categorie`) REFERENCES `categorii_droguri`(`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
+
+CREATE TABLE `model_consum_urgente` (
+  `id` int PRIMARY KEY AUTO_INCREMENT,
+  `id_categorie` int,
+  `model` varchar(255),
+  `nr_pacienti` int,
+  `an` int,
+  FOREIGN KEY (`id_categorie`) REFERENCES `categorii_droguri`(`id`) ON DELETE CASCADE
+) ENGINE=InnoDB;
 
 CREATE TABLE `sex_urgente` (
   `id` int PRIMARY KEY AUTO_INCREMENT,

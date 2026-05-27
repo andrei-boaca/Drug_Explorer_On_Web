@@ -2,9 +2,9 @@
 session_start();
 require_once __DIR__ . '/config.php';
 
-// IMPORTANT: schimbă parola înainte de deployment în producție!
-define('ADMIN_USER', 'admin');
-define('ADMIN_PASS', 'admin123');
+if (!defined('ADMIN_USER') || !defined('ADMIN_PASS')) {
+    die('Credentialele admin nu sunt configurate in config.php.');
+}
 
 if (empty($_SESSION['csrf_token'])) {
     $_SESSION['csrf_token'] = bin2hex(random_bytes(16));

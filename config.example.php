@@ -7,6 +7,9 @@ define('DB_CHARSET', 'utf8mb4');
 
 define('GROQ_API_KEY', 'PUNE_CHEIA_GROQ_AICI');
 
+define('ADMIN_USER', 'admin');
+define('ADMIN_PASS', 'SCHIMBA_PAROLA_ADMIN_AICI');
+
 function getConnection(): PDO {
     static $pdo = null;
     if ($pdo === null) {

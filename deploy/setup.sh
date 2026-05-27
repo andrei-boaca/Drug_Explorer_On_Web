@@ -17,6 +17,7 @@ DOMAIN=""   # lasat gol = acces prin IP
 # Parole generate random (salvate la sfarsit)
 DB_ROOT_PASS=$(openssl rand -base64 20 | tr -d '+/=')
 DB_PASS=$(openssl rand -base64 16 | tr -d '+/=')
+ADMIN_PASS=$(openssl rand -base64 12 | tr -d '+/=')
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
@@ -67,6 +68,9 @@ define('DB_PASS', '${DB_PASS}');
 define('DB_CHARSET', 'utf8mb4');
 
 define('GROQ_API_KEY', '${GROQ_KEY}');
+
+define('ADMIN_USER', 'admin');
+define('ADMIN_PASS', '${ADMIN_PASS}');
 
 function getConnection(): PDO {
     static \$pdo = null;
@@ -147,6 +151,8 @@ echo "╠═══════════════════════�
 printf "║   URL:        http://%-32s ║\n" "${DOMAIN:-$SERVER_IP}"
 printf "║   DB user:    %-36s ║\n" "${DB_USER}"
 printf "║   DB pass:    %-36s ║\n" "${DB_PASS}"
+printf "║   Admin user: %-36s ║\n" "admin"
+printf "║   Admin pass: %-36s ║\n" "${ADMIN_PASS}"
 echo "╚══════════════════════════════════════════════════════╝"
 echo ""
 echo "  Salveaza parolele de mai sus!"

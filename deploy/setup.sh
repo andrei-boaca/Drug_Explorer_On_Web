@@ -44,11 +44,6 @@ apt-get install -yq nginx mysql-server \
 # ── 4. Configurare MySQL ──────────────────────────────────────
 echo "[3/7] Configurare MySQL..."
 mysql -u root <<SQL
-ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';
-FLUSH PRIVILEGES;
-SQL
-
-mysql -u root -p"${DB_ROOT_PASS}" <<SQL
 CREATE DATABASE IF NOT EXISTS \`${DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 CREATE USER IF NOT EXISTS '${DB_USER}'@'localhost' IDENTIFIED BY '${DB_PASS}';
 GRANT ALL PRIVILEGES ON \`${DB_NAME}\`.* TO '${DB_USER}'@'localhost';
@@ -150,7 +145,6 @@ echo "╠═══════════════════════�
 printf "║   URL:        http://%-32s ║\n" "${DOMAIN:-$SERVER_IP}"
 printf "║   DB user:    %-36s ║\n" "${DB_USER}"
 printf "║   DB pass:    %-36s ║\n" "${DB_PASS}"
-printf "║   Root MySQL: %-36s ║\n" "${DB_ROOT_PASS}"
 echo "╚══════════════════════════════════════════════════════╝"
 echo ""
 echo "  Salveaza parolele de mai sus!"

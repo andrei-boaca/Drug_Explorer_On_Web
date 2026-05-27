@@ -1002,6 +1002,10 @@ tr:hover td { background: #EFF6FF !important; transition: background 0.1s; }
   background: #fff;
 }
 
+.livrabile-frame-c4 {
+  min-height: 1800px;
+}
+
 .livrabile-video-wrap {
   position: relative;
   width: 100%;
@@ -1027,6 +1031,10 @@ tr:hover td { background: #EFF6FF !important; transition: background 0.1s; }
 @media (max-width: 700px) {
   .livrabile-frame {
     min-height: 62vh;
+  }
+
+  .livrabile-frame-c4 {
+    min-height: 1400px;
   }
 
   .livrabile-actions {

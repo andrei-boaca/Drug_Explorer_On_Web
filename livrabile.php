@@ -73,9 +73,11 @@ if (!in_array($page, $allowedPages, true)) {
             <div class="card livrabile-card">
                 <div class="card-header">Diagrama C4</div>
                 <div class="card-body">
-                    <p class="livrabile-note">Zona este pregatita pentru diagrama C4. Dupa ce o trimiti, o integrez aici direct in pagina.</p>
-                    <div class="empty-state livrabile-empty">
-                        <p>Diagrama C4 nu este adaugata inca.</p>
+                    <div class="livrabile-actions">
+                        <a class="btn-export" href="c4.php" target="_blank" rel="noopener noreferrer">Deschide in pagina separata</a>
+                    </div>
+                    <div class="livrabile-frame-wrap">
+                        <iframe class="livrabile-frame livrabile-frame-c4" src="c4.php?embed=1" title="Diagrama C4 DrugExplorer"></iframe>
                     </div>
                 </div>
             </div>

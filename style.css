@@ -964,3 +964,72 @@ tr:hover td { background: #EFF6FF !important; transition: background 0.1s; }
 }
 
 .chart-hint svg { opacity: .6; flex-shrink: 0; }
+
+/* ================================================================
+   Livrabile Page
+   ================================================================ */
+.livrabile-main {
+  max-width: 1100px;
+}
+
+.livrabile-card {
+  min-height: 420px;
+}
+
+.livrabile-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 0.85rem;
+}
+
+.livrabile-note {
+  font-size: 0.9rem;
+  color: var(--text-mid);
+  margin-bottom: 0.95rem;
+}
+
+.livrabile-frame-wrap {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #fff;
+}
+
+.livrabile-frame {
+  width: 100%;
+  min-height: 70vh;
+  border: 0;
+  background: #fff;
+}
+
+.livrabile-video-wrap {
+  position: relative;
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: #0f172a;
+  aspect-ratio: 16 / 9;
+}
+
+.livrabile-video {
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.livrabile-empty {
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  padding: 2.5rem 1rem;
+}
+
+@media (max-width: 700px) {
+  .livrabile-frame {
+    min-height: 62vh;
+  }
+
+  .livrabile-actions {
+    justify-content: flex-start;
+  }
+}

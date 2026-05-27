@@ -36,20 +36,10 @@ echo "[1/7] Actualizare pachete..."
 apt-get update -q && apt-get upgrade -yq
 
 # ── 3. Instalare nginx + PHP + MySQL ─────────────────────────
-echo "[2/7] Instalare nginx, PHP 8.3, MySQL..."
-apt-get install -yq ca-certificates curl gnupg2 lsb-release
-
-# Adauga repo sury.org (suporta Ubuntu 22/24/26 si Debian)
-curl -sSLo /usr/share/keyrings/deb.sury.org-php.gpg \
-    https://packages.sury.org/php/apt.gpg
-echo "deb [signed-by=/usr/share/keyrings/deb.sury.org-php.gpg] \
-https://packages.sury.org/php/ $(lsb_release -sc) main" \
-    > /etc/apt/sources.list.d/sury-php.list
-apt-get update -q
-
+echo "[2/7] Instalare nginx, PHP, MySQL..."
 apt-get install -yq nginx mysql-server \
-    php8.3-fpm php8.3-mysql php8.3-mbstring php8.3-xml php8.3-curl \
-    php8.3-zip php8.3-intl unzip curl git
+    php8.5-fpm php8.5-mysql php8.5-mbstring php8.5-xml php8.5-curl \
+    php8.5-zip php8.5-intl unzip curl git
 
 # ── 4. Configurare MySQL ──────────────────────────────────────
 echo "[3/7] Configurare MySQL..."
@@ -122,7 +112,7 @@ server {
     # PHP files
     location ~ \.php$ {
         include snippets/fastcgi-php.conf;
-        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_pass unix:/run/php/php8.5-fpm.sock;
         fastcgi_param SCRIPT_FILENAME \$document_root\$fastcgi_script_name;
         include fastcgi_params;
     }
@@ -148,7 +138,7 @@ NGINX
 ln -sf "${NGINX_CONF}" /etc/nginx/sites-enabled/drugexplorer
 rm -f /etc/nginx/sites-enabled/default
 nginx -t && systemctl reload nginx
-systemctl enable nginx php8.3-fpm mysql
+systemctl enable nginx php8.5-fpm mysql
 
 # ── Done ──────────────────────────────────────────────────────
 SERVER_IP=$(curl -s https://api.ipify.org 2>/dev/null || hostname -I | awk '{print $1}')

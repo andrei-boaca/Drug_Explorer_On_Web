@@ -7,7 +7,7 @@ header('X-Content-Type-Options: nosniff');
 set_exception_handler(function (Throwable $e): void {
     error_log('Unhandled exception: ' . $e->getMessage());
     http_response_code(500);
-    echo json_encode(['error' => 'Eroare server.'], JSON_UNESCAPED_UNICODE);
+    echo json_encode(['error' => $e->getMessage(), 'file' => $e->getFile(), 'line' => $e->getLine()], JSON_UNESCAPED_UNICODE);
     exit;
 });
 

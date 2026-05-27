@@ -734,4 +734,213 @@ tr:hover td { background: #EFF6FF !important; transition: background 0.1s; }
   justify-content: center;
 }
 
+/* ── AI Map ── */
+.ai-map-card { margin-bottom: 1.25rem; }
+
+.ai-map-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ai-card-label {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ai-status-badge {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+}
+.badge-live  { background: #d1fae5; color: #065f46; }
+.badge-cache { background: #fef3c7; color: #92400e; }
+
+.ai-map-body { position: relative; padding-bottom: 0.5rem; }
+
+.ai-map-wrapper {
+  display: flex;
+  gap: 1.5rem;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.europe-map-container {
+  flex: 1;
+  min-width: 280px;
+  position: relative;
+}
+
+.ai-map-loading {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--text-muted);
+  font-size: 0.88rem;
+  padding: 3rem 1rem;
+  justify-content: center;
+}
+
+@keyframes spin { to { transform: rotate(360deg); } }
+.ai-spin { animation: spin 1.2s linear infinite; }
+
+.map-country {
+  transition: opacity 0.1s;
+  cursor: default;
+}
+.map-country:hover { opacity: 0.85; }
+
+.ai-map-tooltip {
+  display: none;
+  position: absolute;
+  background: var(--navy);
+  color: #fff;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  z-index: 10;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0,0,0,.2);
+}
+.ai-map-tooltip strong { font-weight: 600; margin-right: 0.3rem; }
+
+.map-legend {
+  width: 180px;
+  flex-shrink: 0;
+  padding-top: 0.5rem;
+}
+
+.legend-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 0.75rem;
+}
+
+.legend-gradient-wrap { margin-bottom: 0.85rem; }
+
+.legend-bar {
+  height: 12px;
+  border-radius: 6px;
+  background: linear-gradient(to right,
+    rgb(46,204,113),
+    rgb(243,156,18),
+    rgb(231,76,60));
+  margin-bottom: 0.3rem;
+}
+
+.legend-bar-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.67rem;
+  color: var(--text-muted);
+}
+
+.legend-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+.legend-stat, .legend-no-data {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.75rem;
+  color: var(--text-mid);
+}
+
+.ls-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+.ls-label { flex: 1; color: var(--text-muted); }
+.ls-val   { font-family: 'DM Mono', monospace; font-weight: 600; color: var(--navy); }
+
+.legend-no-data { margin-top: 0.3rem; color: var(--text-muted); font-size: 0.72rem; }
+
+.ai-timestamp {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.75rem;
+  font-style: italic;
+}
+
+.ai-summary-card,
+.ai-news-card { margin-bottom: 1.25rem; }
+
+.ai-summary-text {
+  font-size: 0.9rem;
+  color: var(--text-mid);
+  line-height: 1.7;
+}
+
+.ai-trending-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.trending-item {
+  border-left: 3px solid var(--border);
+  padding-left: 1rem;
+  transition: border-color 0.15s;
+}
+.trending-item:hover { border-left-color: var(--turq); }
+
+.trending-header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.35rem;
+}
+
+.trending-country {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+
+.trending-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+.badge-rising   { background: #fee2e2; color: #991b1b; }
+.badge-declining{ background: #d1fae5; color: #065f46; }
+
+.trending-score {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 20px;
+  font-family: 'DM Mono', monospace;
+}
+
+.trending-reason {
+  font-size: 0.85rem;
+  color: var(--text-mid);
+  line-height: 1.65;
+  margin: 0;
+}
+
+@media (max-width: 680px) {
+  .ai-map-wrapper { flex-direction: column; }
+  .map-legend { width: 100%; }
+}
+
 .chart-hint svg { opacity: .6; flex-shrink: 0; }

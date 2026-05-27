@@ -50,6 +50,10 @@
         <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
         Boli infectioase
       </button></li>
+      <li><button class="tab-btn" data-section="ai-map">
+        <svg width="15" height="15" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+        Harta AI
+      </button></li>
     </ul>
   </div>
 </nav>
@@ -288,6 +292,60 @@
   </div>
 </section>
 
+
+<!-- ===================== AI MAP ===================== -->
+<section class="section" id="sec-ai-map">
+  <div class="section-header">
+    <h1 class="section-title">Harta consum droguri &middot; Europa</h1>
+    <p class="section-desc">Intensitatea consumului de droguri per tara, generata de AI pe baza datelor EMCDDA &middot; actualizare zilnica</p>
+  </div>
+
+  <div class="card ai-map-card">
+    <div class="card-header ai-map-card-header">
+      <span class="ai-card-label">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"/></svg>
+        Europa &middot; Consum droguri
+      </span>
+      <span id="ai-map-status" class="ai-status-badge"></span>
+    </div>
+    <div class="card-body ai-map-body">
+      <div class="ai-map-wrapper">
+        <div id="europe-map" class="europe-map-container">
+          <div class="ai-map-loading">
+            <svg class="ai-spin" width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+            Harta se va incarca la accesarea tab-ului...
+          </div>
+        </div>
+        <div id="map-legend" class="map-legend"></div>
+      </div>
+      <div id="ai-map-tooltip" class="ai-map-tooltip"></div>
+      <p id="ai-map-timestamp" class="ai-timestamp"></p>
+    </div>
+  </div>
+
+  <div class="card ai-summary-card">
+    <div class="card-header">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+      Sumar AI
+    </div>
+    <div class="card-body">
+      <p id="ai-summary-text" class="ai-summary-text">Datele se incarca...</p>
+    </div>
+  </div>
+
+  <div class="card ai-news-card">
+    <div class="card-header">
+      <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
+      Tendinte &amp; Stiri
+    </div>
+    <div class="card-body">
+      <div id="ai-trending-list" class="ai-trending-list">
+        <p class="ai-summary-text">Datele se incarca...</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 </main>
 
 <!-- ===================== DRUG DETAIL MODAL ===================== -->
@@ -307,6 +365,9 @@
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/d3@7/dist/d3.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
 <script src="js/app.js"></script>
+<script src="js/ai_map.js"></script>
 </body>
 </html>

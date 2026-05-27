@@ -44,7 +44,7 @@ apt-get install -yq nginx mysql-server \
 # ── 4. Configurare MySQL ──────────────────────────────────────
 echo "[3/7] Configurare MySQL..."
 mysql -u root <<SQL
-ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '${DB_ROOT_PASS}';
+ALTER USER 'root'@'localhost' IDENTIFIED BY '${DB_ROOT_PASS}';
 FLUSH PRIVILEGES;
 SQL
 

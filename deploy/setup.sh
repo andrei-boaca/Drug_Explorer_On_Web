@@ -37,6 +37,9 @@ apt-get update -q && apt-get upgrade -yq
 
 # ── 3. Instalare nginx + PHP + MySQL ─────────────────────────
 echo "[2/7] Instalare nginx, PHP 8.3, MySQL..."
+apt-get install -yq software-properties-common ca-certificates lsb-release
+add-apt-repository -y ppa:ondrej/php
+apt-get update -q
 apt-get install -yq nginx mysql-server \
     php8.3-fpm php8.3-mysql php8.3-mbstring php8.3-xml php8.3-curl \
     php8.3-zip php8.3-intl unzip curl git

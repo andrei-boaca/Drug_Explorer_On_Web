@@ -7,7 +7,7 @@ set -euo pipefail
 
 # ── Configurare ───────────────────────────────────────────────
 REPO_URL="https://github.com/andrei-boaca/Drug_Explorer_On_Web.git"
-BRANCH="main"
+BRANCH="AIPage"
 APP_DIR="/var/www/drugexplorer"
 NGINX_CONF="/etc/nginx/sites-available/drugexplorer"
 DB_NAME="statistici_droguri"
